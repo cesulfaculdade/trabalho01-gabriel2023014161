@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableOpacityBase, View } from "react-native"
+import { ListTitle } from "../components/ListTitle"
 
 export function Home() {
 
@@ -29,6 +30,11 @@ export function Home() {
             </Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.productAndFinish}>
+          <ListTitle  color={"#31C667"} name={"Produtos"} number={0}/>
+          <ListTitle color={"#7A4A9E"} name={"Finalizados"} number={0}/>
+        </View>
+        
 
     </View>
   )
@@ -82,5 +88,17 @@ const styles = StyleSheet.create({
   textButton: {
     color: '#fff',
     fontSize: 24
+  },
+  productAndFinish: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    alignSelf: 'stretch',
+    marginLeft: 24,
+    marginRight: 24,
+    marginTop: 33
+  },
+  list: {
+
   }
 })
