@@ -1,11 +1,34 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, TouchableOpacityBase, View } from "react-native"
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, TouchableOpacityBase, View } from "react-native"
 import { ListTitle } from "../components/ListTitle"
+import { useState } from "react";
 
 export function Home() {
 
-  function handleProductAdd() {
-    console.log('Teste')
-  }
+  const [products, setProducts] = useState<string[]>([]);
+  const [productName, setProductName] = useState('');
+
+    function handleProductAdd() {
+      if (products.includes(productName)){
+        return Alert.alert("Produto já cadastrado", "Já existe um produto na lista com esse nome.")
+      }
+
+      setProducts((prevState) => [...prevState, productName]);
+      setProductName('');
+    }
+
+    function handleProductRemove(name: string) {
+      console.log(`Produto Removido! ${name}`);
+      return Alert.alert("Remover", `Deseja remover o produto ${name}?`, [
+          {
+           text: 'Sim',
+           onPress: () => setProducts(prevState => prevState.filter(product => product != name))
+          },
+          {
+            text: 'Não',
+            style: 'cancel'
+          }
+        ]);
+       }
 
   return (
     <View style={styles.container}>
@@ -34,8 +57,27 @@ export function Home() {
           <ListTitle  color={"#31C667"} name={"Produtos"} number={0}/>
           <ListTitle color={"#7A4A9E"} name={"Finalizados"} number={0}/>
         </View>
-        
 
+        <FlatList 
+              data={products}
+              keyExtractor={item => item}
+              renderItem={({item}) => (
+                <Product name={item} onRemove={() => handleProductRemove(item)} />
+              )}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={products.length <= 0 && styles.list}
+              ListEmptyComponent={() => (
+                <View>
+                  <Text style={styles.listEmptyText}>
+                    Você ainda não tem produtos na lista de compra
+                  </Text>
+                  <Text style={styles.listEmptySubtitle}>
+                    Adicione produtos e organize sua lista de compras
+                  </Text>
+              </View>
+
+              )}
+            />
     </View>
   )
 }
@@ -99,6 +141,29 @@ const styles = StyleSheet.create({
     marginTop: 33
   },
   list: {
-
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: 48,
+    paddingBottom: 48,
+    paddingLeft: 20,
+    paddingRight: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    borderTopColor: '#D9D9D9',
+    borderStyle: 'solid',
+    borderTopWidth: 1,
+    marginTop: 20
+  },
+  listEmptyText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold'
+  },
+  
+  listEmptySubtitle: {
+    textAlign: 'center',
+    fontSize: 12,
+    color: '#808080'
   }
 })
