@@ -1,6 +1,8 @@
-import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, TouchableOpacityBase, View } from "react-native"
+import { Alert, FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, TouchableOpacityBase, View } from "react-native"
 import { ListTitle } from "../components/ListTitle"
 import { useState } from "react";
+import shopping from "../images/shopping_list.png";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export function Home() {
 
@@ -48,9 +50,8 @@ export function Home() {
           style={styles.button}
           onPress={handleProductAdd}
           >
-            <Text style={styles.textButton}>
-              +
-            </Text>
+            <MaterialIcons name="add-circle-outline" size={16} color="white"
+              />
           </TouchableOpacity>
         </View>
         <View style={styles.productAndFinish}>
@@ -67,7 +68,9 @@ export function Home() {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={products.length <= 0 && styles.list}
               ListEmptyComponent={() => (
-                <View>
+                <View style={styles.listEmpty}>
+                  <Image style={styles.image}
+                  source={shopping}/>
                   <Text style={styles.listEmptyText}>
                     Você ainda não tem produtos na lista de compra
                   </Text>
@@ -158,12 +161,20 @@ const styles = StyleSheet.create({
   listEmptyText: {
     textAlign: 'center',
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: '#808080'
   },
-  
   listEmptySubtitle: {
     textAlign: 'center',
     fontSize: 12,
     color: '#808080'
+  },
+  image: {
+    width: 56,
+    marginBottom: 20
+  },
+  listEmpty: {
+    flex: 1,
+    alignItems: 'center'
   }
 })
