@@ -3,18 +3,26 @@ import { ListTitle } from "../components/ListTitle"
 import { useState } from "react";
 import shopping from "../images/shopping_list.png";
 import { MaterialIcons } from '@expo/vector-icons';
+import { Product } from "../components/Product";
+
+type Product = {
+  name: string;
+  done: boolean;
+};
 
 export function Home() {
 
-  const [products, setProducts] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [productName, setProductName] = useState('');
+  const productDone = products.reduce((acc, product) => {
+    return product.done ? acc + 1 : acc;
+    }, 0);
 
     function handleProductAdd() {
-      if (products.includes(productName)){
-        return Alert.alert("Produto já cadastrado", "Já existe um produto na lista com esse nome.")
+      if (products.some(product => product.name === productName)) {
+        return Alert.alert("Produto já cadastrado", "Já existe um produto na lista com esse nome.");
       }
-
-      setProducts((prevState) => [...prevState, productName]);
+      setProducts((prevState) => [...prevState, {name: productName, done: false}]);
       setProductName('');
     }
 
@@ -23,7 +31,7 @@ export function Home() {
       return Alert.alert("Remover", `Deseja remover o produto ${name}?`, [
           {
            text: 'Sim',
-           onPress: () => setProducts(prevState => prevState.filter(product => product != name))
+           onPress: () => setProducts(prevState => prevState.filter(product => product.name != name))
           },
           {
             text: 'Não',
@@ -31,7 +39,14 @@ export function Home() {
           }
         ]);
        }
-
+    
+     function handleProductDone(name: string) {
+      setProducts((prevState) =>
+        prevState.map((product) =>
+          product.name === name ? { ...product, done: !product.done } : product
+        )
+      );
+    }
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -44,6 +59,8 @@ export function Home() {
             placeholder="Adicione um novo produto"
             placeholderTextColor='#808080'
             keyboardType="default"
+            value={productName}
+            onChangeText={setProductName}
           />
 
           <TouchableOpacity
@@ -55,15 +72,16 @@ export function Home() {
           </TouchableOpacity>
         </View>
         <View style={styles.productAndFinish}>
-          <ListTitle  color={"#31C667"} name={"Produtos"} number={0}/>
-          <ListTitle color={"#7A4A9E"} name={"Finalizados"} number={0}/>
+          <ListTitle  color={"#31C667"} name={"Produtos"} number={products.length}/>
+          <ListTitle color={"#7A4A9E"} name={"Finalizados"} number={productDone}/>
         </View>
 
         <FlatList 
               data={products}
-              keyExtractor={item => item}
+              keyExtractor={item => item.name}
               renderItem={({item}) => (
-                <Product name={item} onRemove={() => handleProductRemove(item)} />
+                <Product name={item.name} done={item.done} onRemove={() => handleProductRemove(item.name)}
+                RadioPress={() => handleProductDone(item.name)} />
               )}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={products.length <= 0 && styles.list}
